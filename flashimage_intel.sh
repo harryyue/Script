@@ -1,37 +1,43 @@
-#!/bin/sh 
+#!/bin/bash 
 
-echo ">>>start..."
-echo -n "Please input directory:"
+echo ">>>$0:Executing..."
 
-read DIR
-if [ -z "$DIR" ]
+echo -n ">Please input directory:"
+
+if [ -z "$1" ]
 then
-	echo ">>>Using default directory..."
 	DIR="/home/harry/Project/AMZ/code/m_byt_cr_modify/out/target/product/coho"
+	echo "$DIR"
+else
+	DIR=$1
+	echo "$DIR"
 fi
 
 cd $DIR
 if [ $? -ne 0 ]
 then
-	echo "[error]$DIR doesn't exist!!!"
+	echo -e "\033[31;1m>$0:$DIR doesn't exist!!! \033[0m"
 	exit 1
 fi
 
-echo ">>>reboot device into bootloader..."
+echo ">>$0:Reboot device into bootloader..."
 adb reboot bootloader
 if [ $? -ne 0 ]
 then
-	echo "[error]Device not found!!!"
+	echo -e "\033[31;1m>$0:Device not found!!! \033[0m"
 	exit 1
 fi
+echo -e "\033[32;1m>$0:Reboot device successful!! \033[0m"
 
-echo ">>>flash  boot..."
+echo ">>$0:Flash  boot..."
+sleep 20s
 fastboot flash boot boot.img
 
-echo ">>>flash system..."
+echo ">>$0:Flash system..."
 fastboot flash system system.img
 
-echo ">>>reboot device..."
+echo ">>$0:Reboot device..."
 fastboot reboot
 
-echo ">>>end..."
+echo ">>>$0:Finish."
+exit 0
