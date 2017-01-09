@@ -1,3 +1,18 @@
+##################################### Driver compile Makefile ##########################################################
+#
+#Author : harryyue
+#
+#Modify : 2017-01-09
+#
+#Update : 
+#
+#########################################################################################################################
+
+#If module verification failed,please set CONFIG_MODULE_SIG=n
+#kvm: module verification failed: signature and/or  required key missing - tainting kernel 
+
+#CONFIG_MODULE_SIG=n
+
 KERNELDIR:=/lib/modules/$(shell uname -r)/build
 SRC:=
 APP:=
