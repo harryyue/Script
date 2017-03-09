@@ -8,3 +8,4 @@
 #5.push_ko.py	=>	android用于push驱动模块的脚本
 #6.patchcopy_1st.py	=>	用于将git format patch分类存储(初版)
 #7.patchcopy_2st.py	=>	用于将git format patch分类存储(修正版)
+#8.patchcopy_3st.py	=>	用于将git format patch分类存储(修正版更新)
