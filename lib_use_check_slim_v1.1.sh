@@ -58,14 +58,17 @@ echo ">[1/5]Find all execable in */bin/* path and find all library in the rootfs
 echo "###############   library path  ###############" > $OUT/report.txt
 echo "# Name                    Count     LinkTo               Path" >> $OUT/report.txt
 
-echo "###############   library path  ###############" > $OUT/report_unuse.txt
-echo "# Name                    Count     LinkTo               Path" >> $OUT/report_unuse.txt
+echo "###############   library path  ###############" > $OUT/report_unuse_link.txt
+echo "# Name                    Count     LinkTo               Path" >> $OUT/report_unuse_link.txt
 
-find -name "*.so" -o -name "*.so.*" >> $TMP/lib_path_tmp
+echo "###############   library path  ###############" > $OUT/report_unuse_lib.txt
+echo "# Name                    Count     LinkTo               Path" >> $OUT/report_unuse_lib.txt
+
+sudo find -name "*.so" -o -name "*.so.*" >> $TMP/lib_path_tmp
 
 echo "###############   readelf files  ###############" > $TMP/readelf
 
-find -type d -name "bin" > $TMP/bin_path
+sudo find -type d -name "bin" > $TMP/bin_path
 
 cat $TMP/bin_path | while read line
 do
@@ -106,9 +109,9 @@ do
 done
 echo ">[3/5]done."
 
-echo ">[4/5]Start to generate the summary report..."
 #generate the symbolic link report.txt and library unuse report.txt
-awk -v out1="$OUT/report_unuse.txt" -v out2="$TMP/symb_use.txt" -v out3="$TMP/lib_unuse.txt" '!/^#/{if($3!="NA"){if($2==0){print $0 >> out1;}else{print $0 >> out2;}}else{if($2==0){print $0 >> out3;}}}' $OUT/report.txt
+echo ">[4/5]Start to generate the summary report..."
+awk -v out1="$OUT/report_unuse_link.txt" -v out2="$TMP/symb_use.txt" -v out3="$TMP/lib_unuse.txt" '!/^#/{if($3!="NA"){if($2==0){print $0 >> out1;}else{print $0 >> out2;}}else{if($2==0){print $0 >> out3;}}}' $OUT/report.txt
 
 #combine the unuse peport.txt
 cat $TMP/lib_unuse.txt | while read line
@@ -117,15 +120,15 @@ do
 	grep "\`$KEY'" $TMP/symb_use.txt
 	if [ $? != 0 ]
 	then
-		echo $line >> $OUT/report_unuse.txt
+		echo $line >> $OUT/report_unuse_lib.txt
 	fi
 done
-sort -k 3 -k 1 $OUT/report_unuse.txt -o $OUT/report_unuse.txt
+#sort -k 3 -k 1 $OUT/report_unuse.txt -o $OUT/report_unuse.txt
 echo ">[4/5]done."
 
-echo ">[5/5]Clean the temp files..."
 #Clean the temp files
-rm -rf $TMP/*
+echo ">[5/5]Clean the temp files..."
+#rm -rf $TMP/*
 echo ">[5/5]done."
 
 echo "###############   Done   #############"
