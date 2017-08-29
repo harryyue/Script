@@ -23,6 +23,11 @@ cd $LINUX
 git checkout $LINUX_BRANCH
 git format-patch $1
 mv *.patch $PRE/tmp_patch
+if [ $? != 0 ]
+then
+	echo "[Error]Can't Find patch in $LINUX ..."
+	exit 1
+fi
 echo "[1/4]done."
 
 echo "[2/4]Apply the patch to Android kernel's $ANDROID_BRANCH branch..."
@@ -48,3 +53,5 @@ cd $ANDROID/../../out/target/product/android_nautilus_defconfig/
 sz DomULinux.img
 echo "[4/4]done."
 echo "###############  Finish  ###############"
+
+exit 0
