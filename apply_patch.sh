@@ -6,6 +6,7 @@ LINUX="$PRE/dom0/kernel_dom0/"
 ANDROID="$PRE/domU/android/kernel/android-4.4/"
 LINUX_BRANCH="cyber_security_local"
 ANDROID_BRANCH="cyber_security"
+IMG2HOST="/mnt/hgfs/ubuntu_share/"
 
 echo "###############  Apply patch to Android kernel  ###############"
 if [ -z $1 ]
@@ -63,7 +64,10 @@ then
 	exit 1
 fi
 
-sz DomULinux.img
+#sz DomULinux.img
+sudo cp DomULinux.img $IMG2HOST
+sync
+
 echo "[4/4]done."
 echo "###############  Finish  ###############"
 
