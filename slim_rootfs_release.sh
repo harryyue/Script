@@ -18,7 +18,8 @@ ROOTFS=$1
 cd $1
 
 do_remove() {
-	COUNT=0
+	COUNT_f=0
+	COUNT_d=0
 
 	if [ ! -f $1 ]
 	then
@@ -27,11 +28,17 @@ do_remove() {
 	awk -v out="$LIST_PATH/tmp.txt" '!/^#/{print $0 > out;}' $1
 	while read line
 	do
-			echo "rm -rf $line"
-			sudo rm -rf  $line
-			((COUNT++))
+		if [ -d $line ]
+		then
+			((COUNT_d++))
+		else
+			((COUNT_f++))
+		fi
+
+		echo "rm -rf $line"
+		sudo rm -rf  $line
 	done < $LIST_PATH/tmp.txt
-	echo "Total:$COUNT files are remove."
+	echo "Total:$COUNT_f files and $COUNT_d directories are remove."
 	fi
 	
 	rm $LIST_PATH/tmp.txt
@@ -40,19 +47,23 @@ do_remove() {
 
 
 echo ">Slim the rootfs ..."
-echo ">>>[1/3]Remove the useless head files..."
+echo ">>>[1/4]Remove the useless head files..."
 #	sudo find -name "*.h" -o -name "*.hpp" > $LIST_PATH/headfile.txt
 #	do_remove $LIST_PATH/headfile.txt
-echo ">>>[1/3]done."
+echo ">>>[1/4]done."
 #exit 1
 
-echo ">>>[2/3]Remove the useless application..."
+echo ">>>[2/4]Remove the useless application..."
 	do_remove $LIST_PATH/useless_application.txt
-echo ">>>[2/3]done."
+echo ">>>[2/4]done."
 
-echo ">>>[3/3]Remove the useless library..."
+echo ">>>[3/4]Remove the useless library..."
 	do_remove $LIST_PATH/useless_library.txt
-echo ">>>[3/3]done."
+echo ">>>[3/4]done."
+
+echo ">>>[4/4]Remove other useless files..."
+	do_remove $LIST_PATH/useless_other_files.txt
+echo ">>>[4/4]done."
 
 echo ">Finish."
 
