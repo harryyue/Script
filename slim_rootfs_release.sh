@@ -30,18 +30,21 @@ do_remove() {
 	do
 		if [ -d $line ]
 		then
+			echo "rm -rf $line"
+			sudo rm -rf  $line
 			((COUNT_d++))
-		else
+		elif [ -f $line -o -L $line ]
+		then
+			echo "rm -rf $line"
+			sudo rm -rf  $line
 			((COUNT_f++))
 		fi
 
-		echo "rm -rf $line"
-		sudo rm -rf  $line
 	done < $LIST_PATH/tmp.txt
-	echo "Total:$COUNT_f files and $COUNT_d directories are remove."
+	echo "Total:$COUNT_f file(s) and $COUNT_d directori(es) are remove."
+	rm $LIST_PATH/tmp.txt
 	fi
 	
-	rm $LIST_PATH/tmp.txt
 	return 0
 }
 
