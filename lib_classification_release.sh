@@ -159,7 +159,7 @@ sudo find -name "*.so" -o -name "*.so.*" >> $TMP/lib_path_tmp
 
 echo "###############   readelf files  ###############" > $TMP/readelf
 
-sudo find -type d -name "bin" > $TMP/bin_path
+sudo find -type d -name "bin" -o -name "sbin" -o -name "libexec" > $TMP/bin_path
 
 cat $TMP/bin_path | while read line
 do
@@ -218,7 +218,7 @@ echo -e $GREEN ">[4/7]Start to classficate the link files and library..." $RESET
 #find linked by use_link files in useless files
 #link:find all of link files which be used
 
-while [ "1" ="1" ]
+while [ "1" = "1" ]
 do
 	echo "find all of link files..."
 	do_find_source_of_link $TMP/link_unuse.txt $TMP/link_use.txt $TMP/link_use.txt
