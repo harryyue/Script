@@ -28,14 +28,14 @@ do_remove() {
 	awk -v out="$LIST_PATH/tmp.txt" '!/^#/{print $0 > out;}' $1
 	while read line
 	do
-		if [ -d $line ]
+		if sudo test -d $line
 		then
-			echo "rm -rf $line"
+			echo "[D]rm -rf $line"
 			sudo rm -rf  $line
 			((COUNT_d++))
-		elif [ -f $line -o -L $line ]
+		elif sudo test -f $line -o -L $line
 		then
-			echo "rm -rf $line"
+			echo "[F]rm -rf $line"
 			sudo rm -rf  $line
 			((COUNT_f++))
 		fi
