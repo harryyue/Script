@@ -29,6 +29,10 @@ fi
 
 #for exaplem:
 #do_find_source_of_link [checked_file_name,list,use_files]
+#
+# if the item of $1 could find in $2,then move it into $3,or move into tmp.txt
+# Replacing $1 with tmp.txt after finishing check item of $1.
+#
 do_find_source_of_link()
 {
 	if [ $# -lt 3 ]
@@ -60,13 +64,16 @@ do_find_source_of_link()
 	return $FLAG
 }
 
+# do_check_use_shared_library()
+# check the libraries used by items of $1,and record this message into $2
+#
 do_check_use_shared_library()
 {
 	while read line
 	do
 		LIB_NAME=`echo $line|cut -f 1 -d " "`
 		LIB_PATH=`echo $line|cut -f 4 -d " "`
-		echo $LIB_NAME >> $2
+		echo "$LIB_PATH/$LIB_NAME" >> $2
 		readelf -d $LIB_PATH/$LIB_NAME | grep "Shared library" >> $2
 		echo "" >> $2
 	done < $1
@@ -74,6 +81,11 @@ do_check_use_shared_library()
 	return 0
 }
 
+# do_find_shared_library()
+# check the item of $1 if exist in $2,if does,then store it into use_tmp.txt,or
+# store it into useless_tmp.txt.
+# Replacing the $1 with useless_tmp.txt after finishing check $1.
+#
 do_find_shared_library()
 {
 	FLAG=0
@@ -217,7 +229,15 @@ echo -e $GREEN ">[4/7]Start to classficate the link files and library..." $RESET
 
 #find linked by use_link files in useless files
 #link:find all of link files which be used
+#
+# 1.if useless link item of link_unuse.txt could be found in the link_use.txt,
+#   then copy this item into link_use.txt.
+# 2.if useless link item of link_unuse.txt couldn't be found in the link_use.txt,
+#   then copy this item into tmp.txt.
+# 3.if all of item are checked,then move the tmp.txt to link_unuse.txt.
+# 4.do step 1-3 until the couldn't found useless item in lin_use.txt anymore.
 
+#link
 while [ "1" = "1" ]
 do
 	echo "find all of link files..."
@@ -229,6 +249,14 @@ do
 	fi
 done
 #library
+# 
+# 1.if useless lib item of lib_unuse.txt could be found in the link_use.txt,
+#   then copy this item into lib_use.txt.
+# 2.if useless lib item of lib_unuse.txt couldn't be found in the link_use.txt,
+#   then copy this item into tmp.txt.
+# 3.if all of item are checked,then move the tmp.txt to lib_unuse.txt.
+# 4.because of lib item is source file,we just check lib_unuse.txt one time.
+
 do_find_source_of_link $TMP/lib_unuse.txt $TMP/link_use.txt $TMP/lib_use.txt
 echo -e $GREEN ">[4/7]done." $RESET
 
@@ -239,19 +267,16 @@ do
 	FLAG_LINK=0
 	
 	echo -n ">>>>>>>>>>>>"
-#lib_use
+
+# check the shared libraries are used by lib_use items and link_use items
+# lib_use
 	do_check_use_shared_library $TMP/lib_use.txt $TMP/lib_readelf
 
-#link_use
+# link_use
 	do_check_use_shared_library $TMP/link_use.txt $TMP/lib_readelf
 
-	do_find_shared_library $TMP/lib_unuse.txt $TMP/lib_readelf
-	if [ $? != 0 ]
-	then
-		cat $TMP/lib_use.txt >> $TMP/lib_use_full.txt
-		mv use_tmp.txt $TMP/lib_use.txt
-		FLAG_LIB=1
-	fi
+# check the shared libraries are used by link_useless items and lib_useless
+# items.
 
 	do_find_shared_library $TMP/link_unuse.txt $TMP/lib_readelf
 	if [ $? != 0 ]
@@ -260,13 +285,25 @@ do
 		mv use_tmp.txt $TMP/link_use.txt
 		FLAG_LINK=1
 	fi
+
+# when we find the new useful link items,we should find out its source file.
+	do_find_source_of_link $TMP/lib_unuse.txt $TMP/link_use.txt $TMP/lib_use.txt
+
+	do_find_shared_library $TMP/lib_unuse.txt $TMP/lib_readelf
+	if [ $? != 0 ]
+	then
+		cat $TMP/lib_use.txt >> $TMP/lib_use_full.txt
+		mv use_tmp.txt $TMP/lib_use.txt
+		FLAG_LIB=1
+	fi
 	
 	if [ $FLAG_LIB = 0 -a $FLAG_LINK = 0 ]
 	then
-		echo " "
+		echo " " 
 		echo "FLAG_LIB=$FLAG_LIB FLAG_LINK=$FLAG_LINK"
 		cat $TMP/lib_use.txt >> $TMP/lib_use_full.txt
 		cat $TMP/link_use.txt >> $TMP/link_use_full.txt
+		cat $TMP/lib_readelf >> $TMP/readelf
 		break
 	fi
 done
@@ -285,6 +322,8 @@ cat $TMP/lib_unuse.txt >> $OUT/lib_unuse_report.txt
 
 sort $TMP/link_unuse.txt -o $TMP/link_unuse.txt
 cat $TMP/link_unuse.txt >> $OUT/link_unuse_report.txt
+
+cp $TMP/readelf $OUT/readelf_report.txt
 echo -e $GREEN ">[6/7]done." $RESET
 
 #Clean the temp files
