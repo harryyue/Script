@@ -4,8 +4,8 @@ PRE="/home/user/M2Hypervisor/"
 PATCH_STOR="/home/user/pro/patch/[3]Cyber_Sercurity_Update/"
 LINUX="$PRE/dom0/kernel_dom0/"
 ANDROID="$PRE/domU/android/kernel/android-4.4/"
-LINUX_BRANCH="cyber_security_local"
-ANDROID_BRANCH="cyber_security"
+LINUX_BRANCH="cyber_security_2"
+ANDROID_BRANCH="cyber_security_2"
 IMG2HOST="/mnt/hgfs/ubuntu_share/"
 
 echo "###############  Apply patch to Android kernel  ###############"
@@ -56,17 +56,17 @@ mv $PRE/tmp_patch/*.patch $PATCH_STOR
 echo "[3/4]done."
 
 echo "[4/4] Send Android to windows..."
-cd $ANDROID/../../out/target/product/android_nautilus_defconfig/
-if [ $? != 0 ]
-then
-	echo "$ANDROID/../../out/target/product/android_nautilus_defconfig/ doesn't
-	exist..."
-	exit 1
-fi
+#cd $ANDROID/../../out/target/product/android_nautilus_defconfig/
+#if [ $? != 0 ]
+#then
+#	echo "$ANDROID/../../out/target/product/android_nautilus_defconfig/ doesn't
+#	exist..."
+#	exit 1
+#fi
 
 #sz DomULinux.img
-sudo cp DomULinux.img $IMG2HOST
-sync
+#sudo cp DomULinux.img $IMG2HOST
+#sync
 
 echo "[4/4]done."
 echo "###############  Finish  ###############"

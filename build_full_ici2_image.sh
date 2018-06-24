@@ -25,22 +25,23 @@ then
 fi
 
 echo  -e $GREEN"Start..."$RESET
-echo "[1/6]Prepare the mirror store."
-test -d $MIRROR_PATH && cd $MIRROR_PATH || (echo -e $RED "[ERROR]Couldn't access $MIRROR_PATH ." $RESET ;exit 1)
+echo "[1/6]Prepare the mirror repository."
+test -d $MIRROR_PATH && cd $MIRROR_PATH || { echo -e $RED "[ERROR]Couldn't access $MIRROR_PATH ." $RESET ; exit 1; }
 ./cleanall && ./pre-integration
 echo "[1/6]done."
 
-echo "[2/6]Merge the AP component to mirror store."
-test -d $AP_PATH && cd $AP_PATH || (echo -e $RED "[ERROR]Couldn't access $AP_PATH ." $RESET ;exit 1)
+echo "[2/6]Merge the AP component to mirror repository."
+test -d $AP_PATH && cd $AP_PATH || {echo -e $RED "[ERROR]Couldn't access$AP_PATH ." $RESET ;exit 1; }
 ./build $2
-test -d tools/scripts && cd tools/scripts || (echo -e $RED "[ERROR]Couldn't access $AP_PATH/tools/scripts ." $RESET ; exit 1)
+test -d tools/scripts && cd tools/scripts || {echo -e $RED "[ERROR]Couldn't access $AP_PATH/tools/scripts ." $RESET ; exit 1; }
 ./merge.sh $2
 echo "[2/6]done."
 
-echo "[3/6]Merge the ODC component to mirror store."
-test -d $ODC_PATH && cd $ODC_PATH || (echo -e $RED "[ERROR]Couldn't access $ODC_PATH ." $RESET ;exit 1)
-sudo cp -r usr/app usr/odc usr/rpc $MIRROR_PATH/merge/usr
-sudo cp -r var/odc var/sdk $MIRROR_PATH/merge/var
+echo "[3/6]Merge the ODC component to mirror repository."
+test -d $ODC_PATH && cd $ODC_PATH || {echo -e $RED "[ERROR]Couldn't access $ODC_PATH ." $RESET ;exit 1; }
+sudo rsync -a usr/app usr/odc usr/rpc $MIRROR_PATH/merge/usr
+sudo rsync -a var/odc var/sdk $MIRROR_PATH/merge/var
+sync
 echo "[3/6]done."
 
 echo "[4/6]Create the release image."
@@ -48,10 +49,10 @@ cd $MIRROR_PATH
 ./pos-integration
 echo "[4/6]done."
 
-echo "[5/6]Update the BSP component to mirror store."
+echo "[5/6]Update the BSP component to mirror repository."
 if [ $# = 3 ]
 then
-	test -d $BSP_PATH && cd $BSP_PATH || (echo -e $RED "[ERROR]Couldn't access $BSP_PATH ." $RESET ;exit 1)
+	test -d $BSP_PATH && cd $BSP_PATH || {echo -e $RED "[ERROR]Couldn't access $BSP_PATH ." $RESET ;exit 1; }
 	if [ $3 = "all" ]
 	then
 		./ReleaseBsp.sh $1
@@ -65,11 +66,11 @@ else
 fi
 echo "[5/6]done."
 
-echo "[6/6]Merge the Android component to mirror store."
-test -d $ANDROID_PATH && cd $ANDROID_PATH || (echo -e $RED "[ERROR]Couldn't access $ANDROID_PATH ." $RESET ; exit 1)
+echo "[6/6]Merge the Android component to mirror repository."
+test -d $ANDROID_PATH && cd $ANDROID_PATH || {echo -e $RED "[ERROR]Couldn't access $ANDROID_PATH ." $RESET ; exit 1; }
 if [ $# = 3 ]
 then
-	test $3 = "all" && sudo cp -r *.img $MIRROR_PATH/release || echo "Not Update the Android component."
+	test $3 = "all" && sudo rsync -a  *.img $MIRROR_PATH/release || echo "Not Update the Android component."
 else
 	echo "Not Update the Android component."
 fi

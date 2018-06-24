@@ -12,3 +12,5 @@
 #009.lib_classification_release.sh  				=>      用于找出rootfs中没有被使用的library，并且分类(初选)
 #010.slim_rootfs_release.sh 						=> 		读取指定文件内容，然后依次删除rootfs中的对应文件，实现rootfs的slim
 #011.build_full_ici2_image.sh 						=> 		用于生成ICI2.0的Relese image.
+#012.revert_library.sh 								=> 		读取指定文件内容，然后依次把rootfs中的对应文件，实现rootfs的slim
+#013.memory_information_get.sh 						=> 		use to get the system memory information
