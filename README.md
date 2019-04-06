@@ -14,3 +14,6 @@
 #011.build_full_ici2_image.sh 						=> 		用于生成ICI2.0的Relese image.
 #012.revert_library.sh 								=> 		读取指定文件内容，然后依次把rootfs中的对应文件，实现rootfs的slim
 #013.memory_information_get.sh 						=> 		use to get the system memory information
+#014.GetAllPatchesOfSpecialFile.sh 					=> 		use to generate special files' patches in git repository
+#015.desip_message_conversion.sh 					=> 		use to conversion desip message from desip uart log
+#016.filter_special_desip_message.sh 				=> 		use to filter special desip message from desip message log file and calculate its checksum
